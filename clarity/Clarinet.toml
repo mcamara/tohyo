@@ -1,0 +1,6 @@
+[project]
+name = "."
+requirements = []
+[contracts.count]
+path = "contracts/count.clar"
+depends_on = []
