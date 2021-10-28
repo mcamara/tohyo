@@ -1,4 +1,3 @@
-import { StacksMainnet } from "@stacks/network";
 import axios from "axios";
 import { Balance } from "../../app/types";
 import { getApiUrl } from './api';

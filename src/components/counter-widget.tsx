@@ -23,7 +23,7 @@ export default class CounterWidget extends Component {
   async countUpButtonPressed() {
     await countUp(
       () => { alert('CANCELLED'); },
-      (url) => { console.log(url) }
+      (url: String) => { console.log(url) }
     );
   }
 

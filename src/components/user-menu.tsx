@@ -1,12 +1,13 @@
 import { Menu, Transition } from '@headlessui/react';
 import { Fragment } from 'react';
 import { useAppSelector } from '../app/hooks';
+import { RootState } from '../app/store';
 
 import SignInButton from "./stacks/sign_in_button";
 import SignOutButton from "./stacks/sign_out_button";
 
 export default function UserMenu() {
-  const account = useAppSelector(state => state.account.data);
+  const account = useAppSelector((state: RootState) => state.account.data);
 
   return (
     <Menu as= "div" className="relative ml-3">

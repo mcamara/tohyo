@@ -13,6 +13,7 @@
     "@stacks/connect-react": "^13.0.0",
     "@stacks/network": "^2.0.1",
     "@stacks/ui": "^7.10.0",
+    "@tailwindcss/forms": "^0.3.4",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -27,6 +28,7 @@
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-redux": "^7.2.5",
+    "react-router-dom": "^5.3.0",
     "react-scripts": "4.0.3",
     "redux": "^4.1.1",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat",
@@ -34,6 +36,7 @@
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
+    "@types/react-router-dom": "^5.3.2",
     "redux-devtools": "^3.7.0"
   },
   "scripts": {
