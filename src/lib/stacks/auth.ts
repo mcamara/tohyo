@@ -8,16 +8,14 @@ const appConfig = new AppConfig(['store_write', 'publish_data']);
 
 export const userSession = new UserSession({ appConfig });
 
-export function authenticate() {
+export function authenticate(onFinish : () => any) {
   showConnect({
     appDetails: {
       name: 'Testing app',
       icon: `${window.location.origin}/logo512.png`,
     },
     redirectTo: '/',
-    onFinish: () => {
-      window.location.reload();
-    },
+    onFinish,
     userSession
   });
 }

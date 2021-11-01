@@ -15,10 +15,11 @@ switch (process.env.REACT_APP_NETWORK_ENV) {
 }
 
 const Config = {
-  contractName: process.env.REACT_APP_CONTRACT_NAME,
   contractAddress: process.env.REACT_APP_CONTRACT_ADDRESS,
   groupContractAddress: process.env.REACT_APP_GROUP_CONTRACT_ADDRESS,
   groupContractName: process.env.REACT_APP_GROUP_CONTRACT_NAME,
+  proposalContractAddress: process.env.REACT_APP_PROPOSAL_CONTRACT_ADDRESS,
+  proposalContractName: process.env.REACT_APP_PROPOSAL_CONTRACT_NAME,
   network,
   apiRootUrl
 }

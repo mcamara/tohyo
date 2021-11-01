@@ -37,7 +37,7 @@
 
 (define-read-only (get-groups (account principal))
   (let ((entries (get group-ids (get-group-ids-by-account account))))
-    (ok (map get-group entries))
+    (map get-group entries)
   )
 )
 

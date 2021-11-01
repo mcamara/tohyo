@@ -19,3 +19,22 @@ export type Account = {
   name?: string;
   domain?: string;
 }
+
+export type Group = {
+  id: number,
+  name: string,
+  admins: Array<String>,
+  owner: String,
+  created_at: number
+}
+
+export type Proposal = {
+  id: number,
+  title: string,
+  createdBy: String,
+  createdAt: number,
+  finishAt: number,
+  groupId: number,
+  tokenAddress: Token,
+  totalVotes: number
+}

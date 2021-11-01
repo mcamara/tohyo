@@ -1,10 +1,11 @@
 [project]
 name = "."
 requirements = []
-[contracts.count]
-path = "contracts/count.clar"
-depends_on = []
 
 [contracts.group]
 path = "contracts/group.clar"
+depends_on = []
+
+[contracts.proposal]
+path = "contracts/proposal.clar"
 depends_on = []

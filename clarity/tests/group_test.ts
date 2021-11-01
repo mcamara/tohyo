@@ -14,7 +14,7 @@ Clarinet.test({
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(deployer.address)], deployer.address).result,
-      '(ok [])'
+      '[]'
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-group', [types.uint(1)], deployer.address).result,
@@ -35,7 +35,7 @@ Clarinet.test({
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(deployer.address)], deployer.address).result,
-      `(ok [{admins: [${deployer.address}], created-at: u1, id: u1, name: "new-group", owner: ${deployer.address}}])`
+      `[{admins: [${deployer.address}], created-at: u1, id: u1, name: "new-group", owner: ${deployer.address}}]`
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-group', [types.uint(1)], deployer.address).result,
@@ -59,7 +59,7 @@ Clarinet.test({
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(deployer.address)], deployer.address).result,
-      `(ok [{admins: [${deployer.address}], created-at: u1, id: u1, name: "new-group", owner: ${deployer.address}}, {admins: [${deployer.address}], created-at: u2, id: u2, name: "another-group", owner: ${deployer.address}}])`
+      `[{admins: [${deployer.address}], created-at: u1, id: u1, name: "new-group", owner: ${deployer.address}}, {admins: [${deployer.address}], created-at: u2, id: u2, name: "another-group", owner: ${deployer.address}}]`
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-group', [types.uint(2)], deployer.address).result,
@@ -84,11 +84,11 @@ Clarinet.test({
 
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(deployer.address)], deployer.address).result,
-      `(ok [${groupText}])`
+      `[${groupText}]`
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(wallet1.address)], deployer.address).result,
-      `(ok [${groupText}])`
+      `[${groupText}]`
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-group-ids-by-account', [types.principal(wallet1.address)], wallet1.address).result,
@@ -117,7 +117,7 @@ Clarinet.test({
 
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(wallet1.address)], deployer.address).result,
-      `(ok [${groupText}])`
+      `[${groupText}]`
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-group-ids-by-account', [types.principal(wallet1.address)], wallet1.address).result,
@@ -130,7 +130,7 @@ Clarinet.test({
 
     assertEquals(
       chain.callReadOnlyFn('group', 'get-groups', [types.principal(wallet1.address)], deployer.address).result,
-      `(ok [])`
+      `[]`
     );
     assertEquals(
       chain.callReadOnlyFn('group', 'get-group-ids-by-account', [types.principal(wallet1.address)], wallet1.address).result,
