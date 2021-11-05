@@ -15,7 +15,8 @@ export async function getTokenInfo(address: string): Promise<Token> {
   const regexp1 = /::[a-zA-z-]+$/
   const results = await axios.get<AxiosResponse>(getApiUrl('tokenData', { address: address.replace(regexp1, '') }));
   return {
-    address: address,
+    address: results.data.sender_address,
+    contractName: address.split('.')[1],
     name: results.data.name,
     symbol: results.data.symbol,
     decimals: results.data.decimals,
@@ -23,3 +24,30 @@ export async function getTokenInfo(address: string): Promise<Token> {
   }
 }
 
+export const acceptedProposalTokens : Array<Token> = [
+  // TODO: Make this list dynamic
+  {
+    address: "ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2",
+    contractName: 'arkadiko-token::diko',
+    name: "Arkadiko Token",
+    symbol: "DIKO",
+    decimals: 6,
+    imageUri: ''
+  },
+  {
+    address: "ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2",
+    contractName: 'stdiko-token::stdiko',
+    name: "Staked Arkadiko Token",
+    symbol: "stDIKO",
+    decimals: 6,
+    imageUri: ''
+  },
+  {
+    address: 'ST26902A6NT1QSWQXXYM55EM579RY9CCPQDN02QW2',
+    contractName: 'usda-token::usda',
+    name: 'USDA',
+    symbol: 'USDA',
+    decimals: 6,
+    imageUri: ''
+  }
+];

@@ -7,7 +7,7 @@ export default function Balances() {
     <div>
       {
         Object.values(balances).map((balance) => (
-          <div key={balance.token.address}>--{balance.token.name}--{balance.balance}</div>
+          <div key={balance.token.contractName}>--{balance.token.name}--{balance.balance}</div>
         ))
       }
     </div>

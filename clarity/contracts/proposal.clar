@@ -8,7 +8,8 @@
   group-id: uint,
   created-at: uint,
   finish-at: uint,
-  token: principal,
+  token-name: (string-ascii 32),
+  token-address: principal,
   total-votes: uint
 })
 (define-map proposal-entries-by-group { group-id: uint } { proposal-ids: (list 300 uint) })
@@ -24,7 +25,7 @@
 ;; getters
 (define-read-only (get-proposal (id uint))
   (default-to
-    { id: u0, title: "", created-by: tx-sender, created-at: u0, group-id: u0, finish-at: u0, token: .group, total-votes: u0 }
+    { id: u0, title: "", created-by: tx-sender, created-at: u0, group-id: u0, finish-at: u0, token-name: "", token-address: .group, total-votes: u0 }
     (map-get? proposals { proposal-id: id })
   )
 )
@@ -44,7 +45,7 @@
 )
 
 ;; setters
-(define-public (create-proposal (title (string-ascii 100)) (group-id uint) (finish-at uint) (token principal))
+(define-public (create-proposal (title (string-ascii 100)) (group-id uint) (finish-at uint) (token-address principal) (token-name (string-ascii 32)))
   (let
     (
       (new-proposal-id (+ (get-last-proposal-id) u1))
@@ -63,7 +64,8 @@
         created-at: block-height,
         group-id: group-id,
         finish-at: finish-at,
-        token: token,
+        token-address: token-address,
+        token-name: token-name,
         total-votes: u0
       }
     )

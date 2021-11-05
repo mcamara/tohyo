@@ -3,6 +3,8 @@ import { Person } from '@stacks/profile';
 import { Account } from "../../app/types";
 import { callReadOnlyFunction, cvToValue, standardPrincipalCV } from "@stacks/transactions";
 import Config from "./config";
+import { getApiUrl } from './api';
+import axios from "axios";
 
 const appConfig = new AppConfig(['store_write', 'publish_data']);
 
@@ -69,4 +71,11 @@ export function getUserSTXAddress() {
 export function displayName() {
   const userData = getUserData();
   return userData.username || userData.identityAddress;
+}
+
+
+export async function getCurrentBlock() : Promise<number> {
+  // TODO: Move this somewhere else
+  const results = await axios.get<{total: number}>(getApiUrl('currentBlock'));
+  return results.data.total;
 }

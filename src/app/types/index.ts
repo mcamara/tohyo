@@ -7,6 +7,7 @@ export type Balance = {
 
 export type Token = {
   address: string;
+  contractName: string,
   name: string;
   symbol: string;
   decimals: number;
@@ -23,18 +24,18 @@ export type Account = {
 export type Group = {
   id: number,
   name: string,
-  admins: Array<String>,
-  owner: String,
+  admins: Array<string>,
+  owner: string,
   created_at: number
 }
 
 export type Proposal = {
   id: number,
   title: string,
-  createdBy: String,
+  createdBy: string,
   createdAt: number,
   finishAt: number,
   groupId: number,
-  tokenAddress: Token,
+  token: Token,
   totalVotes: number
 }

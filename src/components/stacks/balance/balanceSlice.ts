@@ -28,7 +28,7 @@ const balanceSlice = createSlice({
     builder.addCase(getAccountBalances.fulfilled, (state, action: PayloadAction<Balance[]>) => {
       const balances = action.payload;
       balances.forEach(balance => {
-        state.data[balance.token.address] = balance;
+        state.data[`${balance.token.address}::${balance.token.contractName}`] = balance;
       });
       state.loadingState = "LOADED";
     });

@@ -1,16 +1,22 @@
 import { FinishedTxData, openContractCall } from "@stacks/connect";
 import { callReadOnlyFunction, cvToValue, stringAsciiCV, standardPrincipalCV, uintCV } from "@stacks/transactions";
-import { Proposal, Group, Token } from "../../app/types";
+import { Proposal, Group } from "../../app/types";
+import { acceptedProposalTokens } from './tokens';
 import Config from "./config";
 
-export async function createProposal(
-  title: string, group: Group, finishAt: number, token: Token, onCancel: () => void, onFinish: (tx: FinishedTxData) => void
-) {
+export async function createProposal(proposal: Proposal, onCancel: () => void, onFinish: (tx: FinishedTxData) => void) {
+  debugger
   return openContractCall({
     functionName: 'create-proposal',
     contractAddress: Config.proposalContractAddress!,
     contractName: Config.proposalContractName!,
-    functionArgs: [stringAsciiCV(title), uintCV(group.id), uintCV(finishAt), standardPrincipalCV(token.address)],
+    functionArgs: [
+      stringAsciiCV(proposal.title),
+      uintCV(proposal.groupId),
+      uintCV(proposal.finishAt),
+      standardPrincipalCV(proposal.token.address),
+      stringAsciiCV(proposal.token.contractName)
+    ],
     onCancel,
     onFinish: (tx: FinishedTxData) => {
       console.log(tx);
@@ -42,38 +48,8 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
       createdAt: value['created-at'].value,
       finishAt: value['finish-at'].value,
       groupId: value['group-id'].value,
-      tokenAddress: value.token.value,
+      token: acceptedProposalTokens.find((t) => t.contractName === value['token-name']),
       totalVotes: value['total-votes'].value
     };
   });
 };
-
-// export async function getGroupsById(id: number): Promise<Group> {
-//   try {
-//     const response = cvToValue(
-//       await callReadOnlyFunction({
-//         contractAddress: Config.groupContractAddress!,
-//         contractName: Config.groupContractName!,
-//         functionName: "get-group",
-//         functionArgs: [uintCV(id)],
-//         network: Config.network,
-//         senderAddress: Config.groupContractAddress!,
-//       })
-//     );
-//     return {
-//       id: response.id.value,
-//       name: response.name.value,
-//       admins: response.admins.value.map((a: any) => a.value),
-//       owner: response.owner.value,
-//       created_at: response['created-at'].value
-//     };
-//   } catch (error) {
-//     return {
-//       id: 0,
-//       name: "",
-//       admins: [],
-//       owner: "",
-//       created_at: 0
-//     }
-//   }
-// };

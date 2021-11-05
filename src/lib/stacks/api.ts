@@ -7,6 +7,7 @@ interface hashType {
 const urlList : hashType = {
   balance: 'extended/v1/address/:address/balances',
   tokenData: 'extended/v1/tokens/:address/ft/metadata',
+  currentBlock: 'extended/v1/block'
 }
 
 export function getApiUrl(action: string, params: hashType = {}) {

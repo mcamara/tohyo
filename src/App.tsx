@@ -17,6 +17,7 @@ import {
   Route,
   NavLink
 } from "react-router-dom";
+import NewProposalPage from './components/proposals/new';
 
 const navigation = [
   { name: 'Dashboard', href: '/' },
@@ -37,7 +38,7 @@ export default function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-gray-50">
         <Disclosure as="nav" className="bg-white border-b border-gray-200">
           {() => (
             <>
@@ -84,6 +85,7 @@ export default function App() {
             ?
             <Switch>
               <Route path="/groups/new" component={NewGroupPage} />
+              <Route path="/groups/:id/proposals/new" component={NewProposalPage} />
               <Route path="/groups/:id" component={ShowGroupPage} />
               <Route path="/">
                 <header>

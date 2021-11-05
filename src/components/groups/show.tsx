@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import { Group, Proposal } from "../../app/types";
 import ErrorScreen from "../error-screen";
@@ -13,7 +14,7 @@ const ShowGroupPage = (props : any) => {
   const proposals : Array<Proposal> | undefined = useAppSelector(state => state.proposals.groupProposals[group?.id]);
   const groupLoading = useAppSelector(state => state.groups.loadingState);
   const proposalsLoading = useAppSelector(state => state.proposals.loadingState);
-  const address : String | undefined = useAppSelector(state => state.account.data.address);
+  const address : string | undefined = useAppSelector(state => state.account.data.address);
 
   useEffect(() => {
     if (id && groupLoading === 'LOADING') dispatch(getSingleGroups(id));
@@ -62,7 +63,12 @@ const ShowGroupPage = (props : any) => {
                   <p className="max-w-2xl mt-1 text-sm text-gray-500">You can manage your group here.</p>
                 </div>
                 <div className="px-4 py-5 border-t border-gray-200 sm:px-6">
-                  Create proposal
+                  <NavLink
+                    to={ `/groups/${id}/proposals/new`}
+                    className="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                  >
+                    Create proposal
+                  </NavLink>
                 </div>
               </div>
             }
@@ -73,7 +79,7 @@ const ShowGroupPage = (props : any) => {
                   <p className="max-w-2xl mt-1 text-sm text-gray-500">You can add and remove users to the group from here.</p>
                 </div>
                 <div className="px-4 py-5 border-t border-gray-200 sm:px-6">
-                  TEst
+                  To be done, clarity contract is ready for this. :)
                 </div>
               </div>
             }

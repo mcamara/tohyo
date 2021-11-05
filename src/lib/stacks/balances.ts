@@ -21,6 +21,7 @@ export async function getBalances(address: string): Promise<Balance[]> {
     {
       token: {
         address: '0x',
+        contractName: '',
         name: 'Stacks',
         symbol: 'stx',
         decimals: 6,
