@@ -21,7 +21,8 @@ const NewProposalPage = (props : any) => {
     title: '',
     description: '',
     contractName: acceptedProposalTokens[0].contractName,
-    finishAt: currentBlockNumber
+    finishAt: currentBlockNumber,
+    options: []
   });
 
   useEffect(() => {
@@ -52,7 +53,8 @@ const NewProposalPage = (props : any) => {
       finishAt: state.finishAt,
       groupId: group.id,
       token,
-      totalVotes: 0
+      totalVotes: 0,
+      options: state.options
       }, () => {}, (tx) => { console.log(tx); }
     )
   }

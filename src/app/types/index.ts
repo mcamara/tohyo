@@ -38,5 +38,11 @@ export type Proposal = {
   finishAt: number,
   groupId: number,
   token: Token,
-  totalVotes: number
+  totalVotes: number,
+  options: Array<Option>
+}
+
+export type Option = {
+  description: string,
+  totalVotes: number,
 }

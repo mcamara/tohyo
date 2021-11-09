@@ -45,9 +45,9 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
       senderAddress: Config.proposalContractAddress!,
     })
   );
-  return response.map(async ({ value } : any) => {
-    const info = await readFileFromIPFS(value.hash.value);
 
+  const proposals : Array<Proposal> = await response.map(async ({ value } : any) => {
+    const info = await readFileFromIPFS(value.hash.value);
     return {
       id: value.id.value,
       title: info.title,
@@ -57,7 +57,11 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
       finishAt: value['finish-at'].value,
       groupId: value['group-id'].value,
       token: acceptedProposalTokens.find((t) => t.contractName === value['token-name']),
-      totalVotes: value['total-votes'].value
+      totalVotes: value['total-votes'].value,
+      options: []
     };
   });
+  debugger
+
+  return proposals;
 };

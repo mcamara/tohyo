@@ -37,12 +37,14 @@
     "web-vitals": "^1.0.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.16.0",
+    "@babel/plugin-syntax-bigint": "^7.8.3",
     "@types/react-router-dom": "^5.3.2",
     "redux-devtools": "^3.7.0"
   },
   "scripts": {
-    "start": "craco start",
-    "build": "craco build",
+    "start": "craco start --max_old_space_size=2560",
+    "build": "craco build --max_old_space_size=2560",
     "test": "craco test",
     "eject": "react-scripts eject",
     "clarinet:test": "cd clarity && clarinet test"
@@ -56,13 +58,16 @@
   "browserslist": {
     "production": [
       ">0.2%",
+      "not ie <= 99",
+      "not android <= 4.4.4",
       "not dead",
       "not op_mini all"
     ],
     "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
+      "last 2 chrome version",
+      "last 2 firefox version",
+      "last 2 safari version",
+      "last 2 edge version"
     ]
   }
 }

@@ -31,6 +31,7 @@ const proposalSlice = createSlice({
   extraReducers: (builder) => {
     builder.addCase(getGroupProposals.fulfilled, (state, action: PayloadAction<Proposal[]>) => {
       state.loadingState = "LOADED";
+      debugger
       if (action.payload.length === 0) return;
 
       state.groupProposals[action.payload[0].groupId] = [];
