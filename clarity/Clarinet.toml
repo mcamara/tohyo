@@ -1,11 +1,14 @@
 [project]
 name = "."
 requirements = []
-
 [contracts.group]
 path = "contracts/group.clar"
 depends_on = []
 
 [contracts.proposal]
 path = "contracts/proposal.clar"
+depends_on = []
+
+[contracts.vote]
+path = "contracts/vote.clar"
 depends_on = []

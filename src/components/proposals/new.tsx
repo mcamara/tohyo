@@ -20,7 +20,7 @@ const NewProposalPage = (props : any) => {
   const [state, setState] = useState({
     title: '',
     description: '',
-    tokenAddress: acceptedProposalTokens[0].address,
+    contractName: acceptedProposalTokens[0].contractName,
     finishAt: currentBlockNumber
   });
 
@@ -40,12 +40,13 @@ const NewProposalPage = (props : any) => {
     event.preventDefault();
     if (loading) return;
     loading = true;
-    const token = acceptedProposalTokens.find((t) => t.address === state.tokenAddress);
+    const token = acceptedProposalTokens.find((t) => t.contractName === state.contractName);
     if (!token) return; // TODO: Add error
 
     createProposal({
       id: 0,
       title: state.title,
+      description: state.description,
       createdBy: '',
       createdAt: currentBlockNumber,
       finishAt: state.finishAt,
@@ -121,20 +122,20 @@ const NewProposalPage = (props : any) => {
 
 
                         <div className="px-4 py-5 bg-white sm:p-6 sm:col-span-3">
-                          <label htmlFor="tokenAddress" className="block text-sm font-medium text-gray-700">
+                          <label htmlFor="contractName" className="block text-sm font-medium text-gray-700">
                             Token to vote
                           </label>
                           <div className="mt-1">
                             <select
-                              id="tokenAddress"
-                              name="tokenAddress"
-                              value={state.tokenAddress}
+                              id="contractName"
+                              name="contractName"
+                              value={state.contractName}
                               onChange={handleChange}
                               className="block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                             >
                               {
                                 acceptedProposalTokens.map((token) => (
-                                  <option value={token.address} key={token.address}>
+                                  <option value={token.contractName} key={token.contractName}>
                                     {token.name} ({token.symbol})
                                   </option>
                                 ))

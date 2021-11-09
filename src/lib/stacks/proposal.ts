@@ -2,20 +2,25 @@ import { FinishedTxData, openContractCall } from "@stacks/connect";
 import { callReadOnlyFunction, cvToValue, stringAsciiCV, standardPrincipalCV, uintCV } from "@stacks/transactions";
 import { Proposal, Group } from "../../app/types";
 import { acceptedProposalTokens } from './tokens';
+import { uploadJsonToIPFS, readFileFromIPFS } from '../ipfs';
 import Config from "./config";
 
 export async function createProposal(proposal: Proposal, onCancel: () => void, onFinish: (tx: FinishedTxData) => void) {
-  debugger
+  const hash : string = await uploadJsonToIPFS({
+    title: proposal.title, description: proposal.description
+  });
+  console.log(hash);
   return openContractCall({
     functionName: 'create-proposal',
     contractAddress: Config.proposalContractAddress!,
     contractName: Config.proposalContractName!,
     functionArgs: [
-      stringAsciiCV(proposal.title),
+      stringAsciiCV(hash),
       uintCV(proposal.groupId),
       uintCV(proposal.finishAt),
       standardPrincipalCV(proposal.token.address),
-      stringAsciiCV(proposal.token.contractName)
+      stringAsciiCV(proposal.token.contractName),
+      uintCV(4)
     ],
     onCancel,
     onFinish: (tx: FinishedTxData) => {
@@ -40,10 +45,13 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
       senderAddress: Config.proposalContractAddress!,
     })
   );
-  return response.map(({ value } : any) => {
+  return response.map(async ({ value } : any) => {
+    const info = await readFileFromIPFS(value.hash.value);
+
     return {
       id: value.id.value,
-      title: value.title.value,
+      title: info.title,
+      description: info.description,
       createdBy: value['created-by'].value,
       createdAt: value['created-at'].value,
       finishAt: value['finish-at'].value,

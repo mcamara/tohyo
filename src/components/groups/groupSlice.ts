@@ -42,12 +42,15 @@ const groupSlice = createSlice({
     });
     builder.addCase(getSingleGroups.fulfilled, (state, action: PayloadAction<Group>) => {
       const { id } = action.payload;
-      if (id === 0) {
+      if (id == 0) {
         state.loadingState = "ERROR";
         return;
       }
       state.groups[id] = action.payload;
       state.loadingState = "LOADED";
+    });
+    builder.addCase(getSingleGroups.rejected, (state) => {
+      state.loadingState = "ERROR";
     });
     builder.addCase('accounts/logOut', (state) => {
       state.groupsAdmin = [];

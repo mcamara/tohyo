@@ -3,10 +3,10 @@ import { Clarinet, Tx, Chain, Account, types } from 'https://deno.land/x/clarine
 import { assertEquals } from 'https://deno.land/std@0.90.0/testing/asserts.ts';
 
 const firstProposaText = (address: string) => {
-  return `{created-at: u1, creator: ${address}, finish-at: u10, group-id: u1, id: u1, title: "new proposal", token: ${address}, total-votes: u0}`
+  return `{created-at: u1, created-by: ${address}, finish-at: u10, group-id: u1, hash: "new proposal", id: u1, options-number: u5, token-address: ${address}, token-name: "DIKO", total-votes: u0}`
 }
 const secondProposaText = (address: string) => {
-  return `{created-at: u2, creator: ${address}, finish-at: u10, group-id: u1, id: u2, title: "another proposal", token: ${address}, total-votes: u0}`
+  return `{created-at: u2, created-by: ${address}, finish-at: u10, group-id: u1, hash: "another proposal", id: u2, options-number: u5, token-address: ${address}, token-name: "DIKO", total-votes: u0}`
 }
 
 Clarinet.test({
@@ -25,7 +25,7 @@ Clarinet.test({
     );
     assertEquals(
       chain.callReadOnlyFn('proposal', 'get-proposal', [types.uint(1)], deployer.address).result,
-      `{created-at: u0, creator: ${deployer.address}, finish-at: u0, group-id: u0, id: u0, title: "", token: ${deployer.address}.group, total-votes: u0}`
+      `{created-at: u0, created-by: ${deployer.address}, finish-at: u0, group-id: u0, hash: "", id: u0, options-number: u0, token-address: ${deployer.address}, token-name: "", total-votes: u0}`
     );
 
     // creation of group and first proposal
@@ -33,7 +33,7 @@ Clarinet.test({
       Tx.contractCall('group', 'create-group', [types.ascii("new-group")], deployer.address),
       Tx.contractCall(
         'proposal', 'create-proposal',
-        [types.ascii("new proposal"), types.uint(1), types.uint(10), types.principal(deployer.address)],
+        [types.ascii("new proposal"), types.uint(1), types.uint(10), types.principal(deployer.address), types.ascii("DIKO"), types.uint(5)],
         deployer.address
       ),
     ]);
@@ -46,7 +46,7 @@ Clarinet.test({
     block = chain.mineBlock([
       Tx.contractCall(
         'proposal', 'create-proposal',
-        [types.ascii("another proposal"), types.uint(1), types.uint(10), types.principal(deployer.address)],
+        [types.ascii("another proposal"), types.uint(1), types.uint(10), types.principal(deployer.address), types.ascii("DIKO"), types.uint(5)],
         deployer.address),
     ]);
     assertEquals(block.receipts.length, 1);

@@ -18,7 +18,7 @@ const ShowGroupPage = (props : any) => {
 
   useEffect(() => {
     if (id && groupLoading === 'LOADING') dispatch(getSingleGroups(id));
-    if (group && groupLoading === 'LOADED') dispatch(getGroupProposals(group));
+    if (group?.id && proposalsLoading !== 'LOADED') dispatch(getGroupProposals(group));
   })
 
   const render = () => {

@@ -46,7 +46,7 @@ export default function App() {
                 <div className="flex justify-between h-16">
                   <div className="flex">
                     <div className="flex items-center flex-shrink-0">
-                      <img
+                      {/* <img
                         className="block w-auto h-8 lg:hidden"
                         src="https://tailwindui.com/img/logos/workflow-mark-indigo-600.svg"
                         alt="Workflow"
@@ -55,7 +55,10 @@ export default function App() {
                         className="hidden w-auto h-8 lg:block"
                         src="https://tailwindui.com/img/logos/workflow-logo-indigo-600-mark-gray-800-text.svg"
                         alt="Workflow"
-                      />
+                      /> */}
+                      <h1 className="font-bold">
+                        TOHYO
+                      </h1>
                     </div>
                     <div className="flex ml-6 -my-px sm:space-x-8">
                       {navigation.map((item) => (

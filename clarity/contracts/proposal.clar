@@ -3,29 +3,33 @@
 ;; variables
 (define-map proposals { proposal-id: uint } {
   id: uint,
-  title: (string-ascii 100),
+  hash: (string-ascii 50),
   created-by: principal,
   group-id: uint,
   created-at: uint,
   finish-at: uint,
   token-name: (string-ascii 32),
   token-address: principal,
-  total-votes: uint
+  total-votes: uint,
+  options-number: uint
 })
 (define-map proposal-entries-by-group { group-id: uint } { proposal-ids: (list 300 uint) })
 (define-data-var last-proposal-id uint u0)
 
 ;; errors
 (define-constant err-user-not-an-admin-of-the-group (err u104))
-(define-constant err-title-too-short (err u105))
+(define-constant err-hash-too-short (err u105))
 (define-constant err-group-does-not-exist (err u106))
 (define-constant err-finish-block-should-be-in-the-future (err u107))
 (define-constant err-proposal-already-owned (err u108))
+(define-constant err-too-few-options (err u109))
+(define-constant err-proposal-does-not-exist (err u110))
+(define-constant err-too-late-to-vote (err u111))
 
 ;; getters
 (define-read-only (get-proposal (id uint))
   (default-to
-    { id: u0, title: "", created-by: tx-sender, created-at: u0, group-id: u0, finish-at: u0, token-name: "", token-address: .group, total-votes: u0 }
+    { id: u0, hash: "", created-by: tx-sender, created-at: u0, group-id: u0, finish-at: u0, token-name: "", token-address: tx-sender, total-votes: u0, options-number: u0 }
     (map-get? proposals { proposal-id: id })
   )
 )
@@ -45,7 +49,7 @@
 )
 
 ;; setters
-(define-public (create-proposal (title (string-ascii 100)) (group-id uint) (finish-at uint) (token-address principal) (token-name (string-ascii 32)))
+(define-public (create-proposal (hash (string-ascii 50)) (group-id uint) (finish-at uint) (token-address principal) (token-name (string-ascii 32)) (options-number uint))
   (let
     (
       (new-proposal-id (+ (get-last-proposal-id) u1))
@@ -53,24 +57,39 @@
       (admins (get admins group))
     )
     (asserts! (> finish-at block-height) err-finish-block-should-be-in-the-future)
-    (asserts! (> (len title) u0) err-title-too-short)
+    (asserts! (> options-number u1) err-too-few-options)
+    (asserts! (> (len hash) u0) err-hash-too-short)
     (asserts! (not (is-eq (index-of admins tx-sender) none)) err-user-not-an-admin-of-the-group)
     (map-set
       proposals { proposal-id: new-proposal-id }
       {
         id: new-proposal-id,
-        title: title,
+        hash: hash,
         created-by: tx-sender,
         created-at: block-height,
         group-id: group-id,
         finish-at: finish-at,
         token-address: token-address,
         token-name: token-name,
-        total-votes: u0
+        total-votes: u0,
+        options-number: options-number
       }
     )
     (var-set last-proposal-id new-proposal-id)
     (try! (add-proposal-to-group-list group-id new-proposal-id))
+    (ok true)
+  )
+)
+
+(define-public (add-votes (proposal-id uint) (number-of-votes uint))
+  (let
+    (
+      (proposal (get-proposal proposal-id))
+      (new-number-of-votes (+ (get total-votes proposal) number-of-votes))
+    )
+    (asserts! (> (get id proposal) u0) err-proposal-does-not-exist)
+    (asserts! (>= (get finish-at proposal) block-height) err-too-late-to-vote)
+    (map-set proposals { proposal-id: proposal-id } (merge proposal { total-votes: new-number-of-votes }))
     (ok true)
   )
 )
