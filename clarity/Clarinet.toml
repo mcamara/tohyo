@@ -9,6 +9,3 @@ depends_on = []
 path = "contracts/proposal.clar"
 depends_on = []
 
-[contracts.vote]
-path = "contracts/vote.clar"
-depends_on = []

@@ -2,7 +2,6 @@
 import { Disclosure } from '@headlessui/react';
 
 import UserMenu from './components/user-menu';
-import Balances from './components/stacks/balance/balances';
 import NewGroupPage from './components/groups/new';
 import ShowGroupPage from './components/groups/show';
 import { useEffect } from 'react';
@@ -18,6 +17,8 @@ import {
   NavLink
 } from "react-router-dom";
 import NewProposalPage from './components/proposals/new';
+import ShowProposalPage from './components/proposals/show';
+import GroupsIndex from './components/groups';
 
 const navigation = [
   { name: 'Dashboard', href: '/' },
@@ -90,18 +91,18 @@ export default function App() {
               <Route path="/groups/new" component={NewGroupPage} />
               <Route path="/groups/:id/proposals/new" component={NewProposalPage} />
               <Route path="/groups/:id" component={ShowGroupPage} />
+              <Route path="/proposals/:id" component={ShowProposalPage} />
               <Route path="/">
                 <header>
                   <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold leading-tight text-gray-900">Dashboard</h1>
+                    <h1 className="text-3xl font-bold leading-tight text-gray-900">My groups</h1>
                   </div>
                 </header>
                 <main>
                   <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
                     {/* Replace with your content */}
                     <div className="px-4 py-8 sm:px-0">
-                      <Balances />
-                      <div className="border-4 border-gray-200 border-dashed rounded-lg h-96" />
+                      <GroupsIndex />
                     </div>
                     {/* /End replace */}
                   </div>

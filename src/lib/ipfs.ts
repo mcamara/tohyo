@@ -17,15 +17,18 @@ export async function uploadJsonToIPFS (data: any) : Promise<string> {
 
 interface ipfsFileType {
   title: string,
-  description: string
+  description: string,
+  options: Array<{ order: number, description: string }>
 }
 
 export async function readFileFromIPFS(hash: string): Promise<ipfsFileType> {
-  const response = IPFSClient.cat('QmZ6wJdDUxNkonLQQxDDu29Qwk74UBYhG347shETECvDep');
+  const response = IPFSClient.cat(hash);
   let text = '';
   for await (const chunk of response) {
-    text = `${text}${new TextDecoder("utf-8").decode(chunk)}`
+    text += new TextDecoder("utf-8").decode(chunk);
   }
+  if (text === "") return { title: 'No title', description: '', options: [] };
+
   return JSON.parse(text);
 }
 

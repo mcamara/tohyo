@@ -4,10 +4,18 @@ import ErrorScreen from "../error-screen";
 import { getSingleGroups } from "../groups/groupSlice";
 import LoadingScreen from "../loading-screen";
 import { useState } from "react";
-import { Group } from "../../app/types";
+import { Group, Option } from "../../app/types";
 import { acceptedProposalTokens } from "../../lib/stacks/tokens";
 import { getCurrentBlockNumber } from "../stacks/account/accountSlice";
 import { createProposal } from "../../lib/stacks/proposal";
+
+interface stateType {
+  title: string,
+  description: string,
+  contractName: string,
+  finishAt: number,
+  options: Array<Option>
+}
 
 const NewProposalPage = (props : any) => {
   const { id } = props.match.params;
@@ -17,12 +25,15 @@ const NewProposalPage = (props : any) => {
   const group: Group | undefined = useAppSelector(state => state.groups.groups[id]);
   const currentBlockNumber: number | undefined = useAppSelector(state => state.account.currentBlock);
 
-  const [state, setState] = useState({
+  const [state, setState] = useState<stateType>({
     title: '',
     description: '',
     contractName: acceptedProposalTokens[0].contractName,
     finishAt: currentBlockNumber,
-    options: []
+    options: [
+      { order: 0, description: '', totalVotes: 0 },
+      { order: 1, description: '', totalVotes: 0 }
+    ]
   });
 
   useEffect(() => {
@@ -37,9 +48,39 @@ const NewProposalPage = (props : any) => {
     setState({ ...state, [event.target.name]: value });
   }
 
+  const handleChangeInOption = (option : Option, event : any) => {
+    const { options } = state;
+    options[option.order].description = event.target.value;
+    setState({ ...state, options });
+  }
+
+  const isValid = () : boolean => {
+    return state.options.length > 1 && state.title.length > 0;
+  }
+
+  const addNewOption = (event: any) => {
+    event.preventDefault();
+    if (state.options.length >= 10) return;
+
+    setState({
+      ...state, options: [
+        ...state.options, {
+        order: state.options.length,
+        description: '',
+        totalVotes: 0,
+      }]
+    });
+  }
+
+  const deleteLastOption = (event: any) => {
+    event.preventDefault();
+    state.options.pop();
+    setState({ ...state });
+  }
+
   const handleSubmit = (event: any) => {
     event.preventDefault();
-    if (loading) return;
+    if (loading || !isValid()) return; // TODO: Add error
     loading = true;
     const token = acceptedProposalTokens.find((t) => t.contractName === state.contractName);
     if (!token) return; // TODO: Add error
@@ -54,7 +95,8 @@ const NewProposalPage = (props : any) => {
       groupId: group.id,
       token,
       totalVotes: 0,
-      options: state.options
+      options: state.options,
+      votes: []
       }, () => {}, (tx) => { console.log(tx); }
     )
   }
@@ -166,12 +208,49 @@ const NewProposalPage = (props : any) => {
                             </div>
                           </div>
                         </div>
+                        <div className="px-4 py-5 bg-white sm:p-6">
+                          <label className="block text-sm font-medium text-gray-700">
+                            Options (2 options minimum - 100 characters each)
+                          </label>
+                          {state.options.map((option) => {
+                            return (
+                              <div className="my-2" key={option.order}>
+                                <textarea
+                                  id="description"
+                                  name="description"
+                                  rows={2}
+                                  maxLength={100}
+                                  className="block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                  value={option.description}
+                                  onChange={(e) => handleChangeInOption(option, e) }
+                                  placeholder="Add a description for this option"
+                                />
+                              </div>
+                            )
+                          })}
+                          <div className="text-right">
+                            <button
+                              className={`inline-flex px-4 py-2 mr-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md shadow-sm cursor-pointer justify-right hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${state.options.length <= 2 ? 'disabled:opacity-50' : '' }`}
+                              onClick={deleteLastOption}
+                              disabled={state.options.length <= 2}
+                            >
+                              Delete last option
+                            </button>
+                            <button
+                              className={`inline-flex px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm cursor-pointer justify-right hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${state.options.length >= 10 ? 'disabled:opacity-50' : '' }`}
+                              onClick={addNewOption}
+                              disabled={state.options.length >= 10}
+                            >
+                              Create new option
+                            </button>
+                          </div>
+                        </div>
 
                         <div className="px-4 py-3 text-right bg-gray-50 sm:px-6">
                           <button
                             type="submit"
-                            className="inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                            disabled={loading}
+                            className={`inline-flex justify-center px-4 py-2 text-sm font-medium text-white bg-indigo-600 border border-transparent rounded-md shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${!isValid() ? 'disabled:opacity-50' : '' }`}
+                            disabled={loading || !isValid()}
                           >
                             Create
                           </button>

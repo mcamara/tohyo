@@ -20,23 +20,31 @@ export async function createGroup(name: string, onCancel: () => void, onFinish: 
   });
 }
 
-export async function getGroupsByAccount(account: Account): Promise<Group[]> {
-  if (!account.address) return [];
-
-  const response = cvToValue(
-    await callReadOnlyFunction({
-      contractAddress: Config.groupContractAddress!,
-      contractName: Config.groupContractName!,
-      functionName: "get-groups",
-      functionArgs: [standardPrincipalCV(account.address)],
-      network: Config.network,
-      senderAddress: Config.groupContractAddress!,
+export async function getAllGroups(): Promise<Array<Group>> {
+  try {
+    const response = cvToValue(
+      await callReadOnlyFunction({
+        contractAddress: Config.groupContractAddress!,
+        contractName: Config.groupContractName!,
+        functionName: "groups",
+        functionArgs: [],
+        network: Config.network,
+        senderAddress: Config.groupContractAddress!,
+      })
+    );
+    return response.map(async ({ group }: any) => {
+      return {
+        id: group.id.value,
+        name: group.name.value,
+        admins: group.admins.value.map((a: any) => a.value),
+        owner: group.owner.value,
+        created_at: group['created-at'].value
+      };
     })
-  );
-  console.log(response);
-  debugger;
-  return response;
-};
+  } catch (error) {
+    return [];
+  }
+}
 
 export async function getGroupsById(id: number): Promise<Group> {
   try {
@@ -67,3 +75,33 @@ export async function getGroupsById(id: number): Promise<Group> {
     }
   }
 };
+
+export async function getGroupsByAccount(account: Account): Promise<Array<Group>> {
+  try {
+    if (!account.address) return [];
+
+    const response = cvToValue(
+      await callReadOnlyFunction({
+        contractAddress: Config.groupContractAddress!,
+        contractName: Config.groupContractName!,
+        functionName: "get-groups",
+        functionArgs: [standardPrincipalCV(account.address)],
+        network: Config.network,
+        senderAddress: Config.groupContractAddress!,
+      })
+    );
+
+    return response.map(({ value }: any) => {
+      return {
+        id: value.id.value,
+        name: value.name.value,
+        admins: value.admins.value.map((a: any) => a.value),
+        owner: value.owner.value,
+        created_at: value['created-at'].value
+      };
+    })
+  } catch (error) {
+    return [];
+  }
+}
+

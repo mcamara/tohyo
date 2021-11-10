@@ -1,13 +1,15 @@
 import { FinishedTxData, openContractCall } from "@stacks/connect";
 import { callReadOnlyFunction, cvToValue, stringAsciiCV, standardPrincipalCV, uintCV } from "@stacks/transactions";
-import { Proposal, Group } from "../../app/types";
+import { Proposal, Group, Token, Option } from "../../app/types";
 import { acceptedProposalTokens } from './tokens';
-import { uploadJsonToIPFS, readFileFromIPFS } from '../ipfs';
+import { readFileFromIPFS, uploadJsonToIPFS } from '../ipfs';
 import Config from "./config";
 
 export async function createProposal(proposal: Proposal, onCancel: () => void, onFinish: (tx: FinishedTxData) => void) {
   const hash : string = await uploadJsonToIPFS({
-    title: proposal.title, description: proposal.description
+    title: proposal.title,
+    description: proposal.description,
+    options: proposal.options.map(({order, description}) => { return { order, description } }),
   });
   console.log(hash);
   return openContractCall({
@@ -20,7 +22,7 @@ export async function createProposal(proposal: Proposal, onCancel: () => void, o
       uintCV(proposal.finishAt),
       standardPrincipalCV(proposal.token.address),
       stringAsciiCV(proposal.token.contractName),
-      uintCV(4)
+      uintCV(proposal.options.length)
     ],
     onCancel,
     onFinish: (tx: FinishedTxData) => {
@@ -45,23 +47,71 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
       senderAddress: Config.proposalContractAddress!,
     })
   );
-
-  const proposals : Array<Proposal> = await response.map(async ({ value } : any) => {
-    const info = await readFileFromIPFS(value.hash.value);
+  const proposals = response.map(async ({ value }: any) => {
+    const { title, description, options } = await readFileFromIPFS(value.hash.value);
     return {
       id: value.id.value,
-      title: info.title,
-      description: info.description,
+      title: title,
+      description: description,
       createdBy: value['created-by'].value,
       createdAt: value['created-at'].value,
       finishAt: value['finish-at'].value,
       groupId: value['group-id'].value,
-      token: acceptedProposalTokens.find((t) => t.contractName === value['token-name']),
+      token: acceptedProposalTokens.find((t) => t.contractName === value['token-name'].value) as Token,
       totalVotes: value['total-votes'].value,
-      options: []
+      options: options.map((option) => {
+        return { ...option, totalVotes: 0 };
+      })
     };
   });
-  debugger
-
-  return proposals;
+  return Promise.all(proposals);
 };
+
+export async function getProposalById(id: number): Promise<Proposal> {
+  const proposal = cvToValue(
+    await callReadOnlyFunction({
+      contractAddress: Config.proposalContractAddress!,
+      contractName: Config.proposalContractName!,
+      functionName: "get-proposal",
+      functionArgs: [uintCV(id)],
+      network: Config.network,
+      senderAddress: Config.proposalContractAddress!,
+    })
+  );
+  const { title, description, options } = await readFileFromIPFS(proposal.hash.value);
+  return Promise.resolve({
+    id: proposal.id.value,
+    title: title,
+    description: description,
+    createdBy: proposal['created-by'].value,
+    createdAt: proposal['created-at'].value,
+    finishAt: proposal['finish-at'].value,
+    groupId: proposal['group-id'].value,
+    token: acceptedProposalTokens.find((t) => t.contractName === proposal['token-name'].value) as Token,
+    totalVotes: proposal['total-votes'].value,
+    options: options.map((option) => {
+      return { ...option, totalVotes: 0 };
+    }),
+    votes: proposal.votes.value
+  });
+}
+
+export async function vote(proposal: Proposal, option: Option, votes: number, onCancel: () => void, onFinish: (tx: FinishedTxData) => void) {
+  return openContractCall({
+    functionName: 'vote',
+    contractAddress: Config.proposalContractAddress!,
+    contractName: Config.proposalContractName!,
+    functionArgs: [
+      uintCV(proposal.id),
+      uintCV(option.order),
+      uintCV(votes),
+    ],
+    onCancel,
+    onFinish: (tx: FinishedTxData) => {
+      console.log(tx);
+      console.log(`https://explorer.stacks.co/txid/${tx.txId}?chain=${process.env.REACT_APP_NETWORK_ENV}`);
+      onFinish(tx);
+    },
+    network: Config.network,
+  });
+}

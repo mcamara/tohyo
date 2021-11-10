@@ -47,7 +47,12 @@ const ShowGroupPage = (props : any) => {
                     { proposals && proposals.length > 0
                       ?
                       Object.values(proposals).map((proposal) => (
-                        <div key={proposal.id}>{proposal.title}</div>
+                        <NavLink
+                          to={`/proposals/${proposal.id}`}
+                          key={proposal.id}
+                        >
+                          {proposal.title} ({proposal.token.symbol})
+                        </NavLink>
                       ))
                       :
                       <div> This group has no proposals yet</div>

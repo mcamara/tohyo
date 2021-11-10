@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { Account, Group } from "../../app/types";
-import { getGroupsByAccount, getGroupsById } from "../../lib/stacks/group";
+import { getAllGroups, getGroupsByAccount, getGroupsById } from "../../lib/stacks/group";
 
 type GroupsLoadingState = "NOT_LOGGED_IN" | "LOADING" | "LOADED" | "ERROR";
 export interface GroupState {
@@ -25,9 +25,16 @@ export const getOwnedGroups = createAsyncThunk(
 )
 
 export const getSingleGroups = createAsyncThunk(
-  "account/groups",
+  "account/groups/singleGroup",
   async (id: number) => {
     return await getGroupsById(id);
+  }
+)
+
+export const indexGroups = createAsyncThunk(
+  "account/groups/all",
+  async () => {
+    return await getAllGroups();
   }
 )
 
@@ -36,17 +43,24 @@ const groupSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers: (builder) => {
-    builder.addCase(getOwnedGroups.fulfilled, (state, action: PayloadAction<Group[]>) => {
-      state.groupsAdmin = action.payload;
-      state.loadingState = "LOADED";
-    });
     builder.addCase(getSingleGroups.fulfilled, (state, action: PayloadAction<Group>) => {
       const { id } = action.payload;
-      if (id == 0) {
+      if (id.toString() === '0') {
         state.loadingState = "ERROR";
         return;
       }
       state.groups[id] = action.payload;
+      state.loadingState = "LOADED";
+    });
+    builder.addCase(getOwnedGroups.fulfilled, (state, action: PayloadAction<Array<Group>>) => {
+      for (const group of action.payload) {
+        const { id } = group;
+        if (id.toString() === '0') {
+          state.loadingState = "ERROR";
+          return;
+        }
+        state.groups[id] = group;
+      }
       state.loadingState = "LOADED";
     });
     builder.addCase(getSingleGroups.rejected, (state) => {

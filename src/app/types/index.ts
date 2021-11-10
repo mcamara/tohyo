@@ -39,10 +39,12 @@ export type Proposal = {
   groupId: number,
   token: Token,
   totalVotes: number,
+  votes: Array<number>,
   options: Array<Option>
 }
 
 export type Option = {
+  order: number,
   description: string,
   totalVotes: number,
 }
