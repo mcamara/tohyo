@@ -87,6 +87,7 @@ const NewProposalPage = (props : any) => {
 
     createProposal({
       id: 0,
+      hash: '',
       title: state.title,
       description: state.description,
       createdBy: '',

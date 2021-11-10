@@ -31,6 +31,7 @@ export type Group = {
 
 export type Proposal = {
   id: number,
+  hash: string,
   title: string,
   description: string,
   createdBy: string,

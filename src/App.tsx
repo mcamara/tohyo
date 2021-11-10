@@ -8,7 +8,6 @@ import { useEffect } from 'react';
 import { getAccount } from './lib/stacks/auth';
 import { getAccountDomain, receivedAccount } from './components/stacks/account/accountSlice';
 import { useAppDispatch, useAppSelector } from './app/hooks';
-import { getAccountBalances } from './components/stacks/balance/balanceSlice';
 import NotLoggedInPage from './components/not-logged-in-page';
 import {
   BrowserRouter as Router,
@@ -31,10 +30,7 @@ export default function App() {
 
   useEffect(() => {
     dispatch(receivedAccount(getAccount()));
-    if (address) {
-      dispatch(getAccountBalances(address));
-      dispatch(getAccountDomain(address));
-    }
+    if (address) dispatch(getAccountDomain(address))
   })
 
   return (

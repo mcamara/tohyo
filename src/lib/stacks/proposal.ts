@@ -51,6 +51,7 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
     const { title, description, options } = await readFileFromIPFS(value.hash.value);
     return {
       id: value.id.value,
+      hash: value.hash.value,
       title: title,
       description: description,
       createdBy: value['created-by'].value,
@@ -60,7 +61,7 @@ export async function getProposalByGroup(group: Group): Promise<Proposal[]> {
       token: acceptedProposalTokens.find((t) => t.contractName === value['token-name'].value) as Token,
       totalVotes: value['total-votes'].value,
       options: options.map((option) => {
-        return { ...option, totalVotes: 0 };
+        return { ...option, totalVotes: value.votes.value[option.order].value };
       })
     };
   });
@@ -81,6 +82,7 @@ export async function getProposalById(id: number): Promise<Proposal> {
   const { title, description, options } = await readFileFromIPFS(proposal.hash.value);
   return Promise.resolve({
     id: proposal.id.value,
+    hash: proposal.hash.value,
     title: title,
     description: description,
     createdBy: proposal['created-by'].value,
@@ -90,7 +92,7 @@ export async function getProposalById(id: number): Promise<Proposal> {
     token: acceptedProposalTokens.find((t) => t.contractName === proposal['token-name'].value) as Token,
     totalVotes: proposal['total-votes'].value,
     options: options.map((option) => {
-      return { ...option, totalVotes: 0 };
+      return { ...option, totalVotes: proposal.votes.value[option.order].value };
     }),
     votes: proposal.votes.value
   });
@@ -101,11 +103,7 @@ export async function vote(proposal: Proposal, option: Option, votes: number, on
     functionName: 'vote',
     contractAddress: Config.proposalContractAddress!,
     contractName: Config.proposalContractName!,
-    functionArgs: [
-      uintCV(proposal.id),
-      uintCV(option.order),
-      uintCV(votes),
-    ],
+    functionArgs: [uintCV(proposal.id), uintCV(option.order), uintCV(parseInt(votes.toString(), 10))], // TODO: Fix contract to accept decimals
     onCancel,
     onFinish: (tx: FinishedTxData) => {
       console.log(tx);

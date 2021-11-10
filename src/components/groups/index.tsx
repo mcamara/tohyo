@@ -37,16 +37,6 @@ const GroupsIndex = (props: any) => {
                       alt={group.name}
                     />
                     <h3 className="mt-6 text-sm font-medium text-gray-900">{group.name}</h3>
-                    <dl className="flex flex-col justify-between flex-grow mt-1">
-                      <dt className="sr-only">Title</dt>
-                      <dd className="text-sm text-gray-500">sssssssssssss</dd>
-                      <dt className="sr-only">Role</dt>
-                      <dd className="mt-3">
-                        <span className="px-2 py-1 text-xs font-medium text-green-800 bg-green-100 rounded-full">
-                          ffffffffffffffffff
-                        </span>
-                      </dd>
-                    </dl>
                   </div>
                 </NavLink>
               </li>

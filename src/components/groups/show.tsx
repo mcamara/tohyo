@@ -1,3 +1,4 @@
+import { CalendarIcon, TagIcon } from "@heroicons/react/solid";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -5,6 +6,7 @@ import { Group, Proposal } from "../../app/types";
 import ErrorScreen from "../error-screen";
 import LoadingScreen from "../loading-screen";
 import { getGroupProposals } from "../proposals/proposalSlice";
+import { getCurrentBlockNumber } from "../stacks/account/accountSlice";
 import { getSingleGroups } from "./groupSlice";
 
 const ShowGroupPage = (props : any) => {
@@ -14,11 +16,13 @@ const ShowGroupPage = (props : any) => {
   const proposals : Array<Proposal> | undefined = useAppSelector(state => state.proposals.groupProposals[group?.id]);
   const groupLoading = useAppSelector(state => state.groups.loadingState);
   const proposalsLoading = useAppSelector(state => state.proposals.loadingState);
-  const address : string | undefined = useAppSelector(state => state.account.data.address);
+  const address: string | undefined = useAppSelector(state => state.account.data.address);
+  const currentBlockNumber: number | undefined = useAppSelector(state => state.account.currentBlock);
 
   useEffect(() => {
     if (id && groupLoading === 'LOADING') dispatch(getSingleGroups(id));
     if (group?.id && proposalsLoading !== 'LOADED') dispatch(getGroupProposals(group));
+    if (!currentBlockNumber) dispatch(getCurrentBlockNumber());
   })
 
   const render = () => {
@@ -43,22 +47,43 @@ const ShowGroupPage = (props : any) => {
                   ?
                     <div>LOADING</div>
                   :
-                  <>
-                    { proposals && proposals.length > 0
-                      ?
-                      Object.values(proposals).map((proposal) => (
-                        <NavLink
-                          to={`/proposals/${proposal.id}`}
-                          key={proposal.id}
-                        >
-                          {proposal.title} ({proposal.token.symbol})
-                        </NavLink>
-                      ))
+                  proposals && proposals.length > 0
+                    ?
+                      <ul className="divide-y divide-gray-200">
+                        {Object.values(proposals).map((proposal) => (
+                          <li key={proposal.id}>
+                              <NavLink to={`/proposals/${proposal.id}`} key={proposal.id}>
+                              <div className="px-4 py-4 sm:px-6">
+                                <div className="flex items-center justify-between">
+                                  <p className="text-sm font-medium text-indigo-600 truncate">{proposal.title}</p>
+                                  <div className="flex flex-shrink-0 ml-2">
+                                    <p className={`inline-flex px-2 text-xs font-semibold leading-5 rounded-full ${currentBlockNumber < proposal.finishAt ? 'text-green-800 bg-green-100' : 'text-red-800 bg-red-100'}`}>
+                                      {currentBlockNumber < proposal.finishAt ? 'Open' : 'Closed'}
+                                    </p>
+                                  </div>
+                                </div>
+                                <div className="mt-2 sm:flex sm:justify-between">
+                                  <div className="sm:flex">
+                                    <p className="flex items-center text-sm text-gray-500">
+                                      <TagIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                      {proposal.totalVotes} {proposal.token.symbol} allocated
+                                    </p>
+                                  </div>
+                                  <div className="flex items-center mt-2 text-sm text-gray-500 sm:mt-0">
+                                    <CalendarIcon className="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400" aria-hidden="true" />
+                                    <p>
+                                      Closing on block {proposal.finishAt}
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                            </NavLink>
+                          </li>
+                        ))}
+                      </ul>
                       :
                       <div> This group has no proposals yet</div>
                     }
-                  </>
-                }
               </div>
             </div>
             {address && group.admins.includes(address) &&
